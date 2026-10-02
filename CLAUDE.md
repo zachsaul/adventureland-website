@@ -11,7 +11,8 @@ focused and explain them in plain language.
 - Photos/video go in `public/media/` and are referenced through `src/lib/media.ts`.
 - Before finishing a change, run `npm run build` and make sure it succeeds.
 - Game behavior to preserve: score and bonus shots reset on every page load and never persist;
-  bonuses only happen on successful shots; cat, Dan, Nate and Tetra each get a one-time
-  third-hit reaction, plus a one-time 1,000-point "Lopez Titan" reaction.
+  bonuses only happen on successful shots; cat, Dan, Nate, Tetra and Scout reactions fire on every
+  3rd hit of that group. After Dan's reaction both Dan clowns leave the lineup, and after Scout's
+  she leaves; they come back on refresh. Plus a one-time 1,000-point "Lopez Titan" reaction.
 - Layout: full-width carnival bands (navy game, cream Polaroids, textured red music/tour,
   black biography/TV) separated by matching zigzag edges.

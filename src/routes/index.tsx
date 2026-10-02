@@ -15,6 +15,7 @@ const CAT_IDS = new Set([0, 2, 4, 7, 9]);
 const DAN_IDS = new Set([1, 10]);
 const NATE_IDS = new Set([3, 6]);
 const TETRA_IDS = new Set([5, 8]);
+const SCOUT_IDS = new Set([11]);
 
 // `position` picks which part of each photo shows inside the square Polaroid frame.
 const polaroidPhotos = [
@@ -52,14 +53,15 @@ type ClownTargetProps = {
   name: string;
 };
 
-function ClownTarget({ id, image, name, isHit, isDisabled, registerTarget, onAim, onFire }: ClownTargetProps & {
+function ClownTarget({ id, image, name, isHit, isGone, isDisabled, registerTarget, onAim, onFire }: ClownTargetProps & {
   isHit: boolean;
+  isGone: boolean;
   isDisabled: boolean;
   registerTarget: (id: number, element: HTMLElement | null) => void;
   onAim: (id: number) => void;
   onFire: (id: number) => void;
 }) {
-  const classes = `clown-target clown-target-link ${isHit ? "clown-target-hit" : ""}`;
+  const classes = `clown-target clown-target-link ${isHit ? "clown-target-hit" : ""} ${isGone ? "clown-target-gone" : ""}`;
   const ref = (element: HTMLButtonElement | null) => registerTarget(id, element);
 
   return (
@@ -70,7 +72,9 @@ function ClownTarget({ id, image, name, isHit, isDisabled, registerTarget, onAim
       className={classes}
       onMouseEnter={() => onAim(id)}
       onClick={() => onFire(id)}
-      disabled={isDisabled}
+      disabled={isDisabled || isGone}
+      aria-hidden={isGone || undefined}
+      tabIndex={isGone ? -1 : undefined}
       aria-label={`Fire water at ${name}`}
     >
       <span className="clown-figure">
@@ -123,6 +127,9 @@ function Adventureland() {
   const [shotPending, setShotPending] = useState(false);
   const [score, setScore] = useState(0);
   const [reactionMessage, setReactionMessage] = useState<string | null>(null);
+  // Clowns who have "left" the lineup. Lives only in memory, so a refresh brings them back.
+  const [goneIds, setGoneIds] = useState<Set<number>>(() => new Set());
+  const goneIdsRef = useRef<Set<number>>(new Set());
   const [emailCopied, setEmailCopied] = useState(false);
   const targetRefs = useRef(new Map<number, HTMLElement>());
   const boardRef = useRef<HTMLElement>(null);
@@ -134,7 +141,7 @@ function Adventureland() {
   const hoveredTargetRef = useRef<number | null>(null);
   const polaroidTrackRef = useRef<HTMLDivElement>(null);
   const scoreRef = useRef(0);
-  const hitCountsRef = useRef({ cats: 0, dan: 0, nate: 0, tetra: 0 });
+  const hitCountsRef = useRef({ cats: 0, dan: 0, nate: 0, tetra: 0, scout: 0 });
   const thousandPointMessageShownRef = useRef(false);
   const showIsCurrent = Date.now() < SHOW_ARCHIVE_AT;
 
@@ -212,22 +219,35 @@ function Adventureland() {
     setScore(nextScore);
 
     const counts = hitCountsRef.current;
+    // Reactions fire on every 3rd hit (3, 6, 9...). Dan and Scout leave the lineup after theirs.
     let milestoneMessage: string | null = null;
+    let leavingIds: number[] = [];
     if (CAT_IDS.has(targetId)) {
       counts.cats += 1;
-      if (counts.cats === 3) milestoneMessage = "You have something against cats?";
+      if (counts.cats % 3 === 0) milestoneMessage = "You have something against cats?";
     } else if (DAN_IDS.has(targetId)) {
       counts.dan += 1;
-      if (counts.dan === 3) milestoneMessage = "Dan is getting pretty cold, he’s going inside to write songs...";
+      if (counts.dan % 3 === 0) {
+        milestoneMessage = "Dan is getting pretty cold, he’s going inside to write songs...";
+        leavingIds = [...DAN_IDS];
+      }
     } else if (NATE_IDS.has(targetId)) {
       counts.nate += 1;
-      if (counts.nate === 3) milestoneMessage = "Do you mind? Nate’s trying to write a gold record...";
+      if (counts.nate % 3 === 0) milestoneMessage = "Do you mind? Nate’s trying to write a gold record...";
     } else if (TETRA_IDS.has(targetId)) {
       counts.tetra += 1;
-      if (counts.tetra === 3) milestoneMessage = "This is starting to feel personal. Tetra is NOT happy with you.";
+      if (counts.tetra % 3 === 0) milestoneMessage = "This is starting to feel personal. Tetra is NOT happy with you.";
+    } else if (SCOUT_IDS.has(targetId)) {
+      counts.scout += 1;
+      if (counts.scout % 3 === 0) {
+        milestoneMessage = "Your attempts to rattle Scout are of zero consequence to her, and she’s leaving to go raccoon hunting";
+        leavingIds = [...SCOUT_IDS];
+      }
     }
+    if (leavingIds.length) leavingIds.forEach((id) => goneIdsRef.current.add(id));
 
-    if (!thousandPointMessageShownRef.current && nextScore >= 1000) {
+    // Lopez Titan waits for a shot without another reaction, so it never hides one.
+    if (!milestoneMessage && !thousandPointMessageShownRef.current && nextScore >= 1000) {
       thousandPointMessageShownRef.current = true;
       milestoneMessage = "Wow, you’re a regular Lopez Titan!";
     }
@@ -244,6 +264,7 @@ function Adventureland() {
     resetTimerRef.current = window.setTimeout(() => {
       setHitClown(null);
       setStreamStyle(null);
+      if (leavingIds.length) setGoneIds(new Set(goneIdsRef.current));
       const hoveredTargetId = hoveredTargetRef.current;
       const hoveredGeometry = hoveredTargetId === null ? null : getShotGeometry(hoveredTargetId);
       setGunAngle(hoveredGeometry?.gunAngle ?? 0);
@@ -253,7 +274,8 @@ function Adventureland() {
 
   const fireWaterGun = (requestedTargetId?: number) => {
     if (hitClown !== null || shotPending) return;
-    const ids = Array.from(targetRefs.current.keys());
+    if (requestedTargetId !== undefined && goneIdsRef.current.has(requestedTargetId)) return;
+    const ids = Array.from(targetRefs.current.keys()).filter((id) => !goneIdsRef.current.has(id));
     const targetId = requestedTargetId ?? ids[Math.floor(Math.random() * ids.length)];
     if (targetId === undefined) return;
     const geometry = getShotGeometry(targetId);
@@ -320,6 +342,7 @@ function Adventureland() {
                 <ClownTarget
                   {...clown}
                   isHit={hitClown === clown.id}
+                  isGone={goneIds.has(clown.id)}
                   isDisabled={hitClown !== null || shotPending}
                   registerTarget={registerTarget}
                   onAim={aimAtTarget}
