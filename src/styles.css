@@ -37,6 +37,7 @@
   --ring: oklch(0.91 0.13 95);
   --carnival-blue: oklch(0.38 0.16 249);
   --carnival-blue-deep: oklch(0.2 0.1 253);
+  --game-navy: #1b1e3a; /* background of the top clown-game section */
   --carnival-red: oklch(0.55 0.22 28);
   --carnival-red-dark: oklch(0.33 0.14 29);
   --carnival-gold: oklch(0.83 0.17 83);
@@ -49,7 +50,7 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--carnival-blue-deep); }
+html { background: var(--game-navy); }
 body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
 a { color: inherit; }
 
@@ -373,7 +374,7 @@ a { color: inherit; }
 /* 2026 carnival-band composition */
 .midway-shell {
   padding: 0;
-  background-color: var(--carnival-blue-deep);
+  background-color: var(--game-navy);
   background-image: none;
 }
 
@@ -471,7 +472,7 @@ a { color: inherit; }
   width: min(calc(100% - 1rem), 1180px);
   padding: clamp(.5rem, 2vw, 1.25rem) clamp(.3rem, 2vw, 1.5rem) clamp(3.6rem, 7vw, 6rem);
   border-radius: 0;
-  background: var(--carnival-blue-deep);
+  background: var(--game-navy);
 }
 
 .target-zone { padding-top: 1rem; }
