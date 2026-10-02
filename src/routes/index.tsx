@@ -443,7 +443,7 @@ function Adventureland() {
           <div className="band-story-copy">
             <p>
               Adventureland is an indie rock band founded in Arkansas and a collaborative project between Daniel Grear,
-              Tetra Kish, and Nathaniel Drahn. They have released two studio albums,
+              Tetra Kish, and Nathanael Drahn. They have released two studio albums,
               <cite> Hopes of Closure</cite> and <cite>Eternal Lightweight</cite>. The band has played across the
               country and has been written about by the{" "}
               <a href="https://arktimes.com/rock-candy/2023/01/03/new-music-from-adventureland" target="_blank" rel="noreferrer">Arkansas Times</a>
