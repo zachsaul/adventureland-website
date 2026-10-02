@@ -1,0 +1,25 @@
+# Roadmap
+
+- [x] Make clown targets flip backward when hit
+- [x] Replace Spotify player with Bandcamp album player
+- [ ] Connect the selected Instagram feed service (waiting for widget code or ID)
+- [x] Remove thick yellow borders from media panels
+- [x] Add compact Bandcamp, Apple Music, Spotify, and email links
+- [x] Add the dated Tour listing and automatic one-month archive behavior
+- [x] Replace illustrated clowns with the ten supplied portraits in two rows of five
+- [x] Add springier backward knockdowns and directional water-gun aiming
+- [x] Simplify clown rows, match marquee lights, and add direct clown shooting
+- [x] Replace idle bouncing with hit-only spring knockdowns and refine gun spacing and label orientation
+- [x] Expand the game to two rows of six using the twelve replacement portraits
+- [x] Restyle the firing gun and add water-splash impact with a steady target return
+- [x] Expand the reticle area, align water shots to clicked clowns, and strengthen impact splashes
+- [x] Add thin clown shelves, subtle portrait shadows, and a randomized retro bonus scoreboard
+- [x] Restyle and reposition the scoreboard, with bonuses awarded only on random successful shots
+- [x] Add a labeled score display, band story, looping retro-TV video, and booking banner
+- [x] Simplify the band story, enlarge the score label, and add hover aiming with delayed random fire
+- [x] Add a black media section, full album player, booking marquee, and larger footer links
+- [x] Align water streams with the cannon barrel and apply a dark Bandcamp player theme
+- [x] Restore mobile marquee lights, harmonize the album player, reorder media, and update the band biography
+- [x] Recompose the page into patterned game, Polaroid, music/tour, and TV carnival bands
+- [x] Tighten the marquee with a script “Welcome To,” evenly space all bulbs, remove the game texture, and standardize responsive zigzag borders
+- [x] Add the supplied Polaroid photos, unify the game blue, remove target glow, and add score/character reactions
