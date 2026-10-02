@@ -237,7 +237,7 @@ function Adventureland() {
       bonusTimerRef.current = window.setTimeout(() => {
         setReactionMessage(null);
         bonusTimerRef.current = undefined;
-      }, 3000);
+      }, 5000);
     }
     resetTimerRef.current = window.setTimeout(() => {
       setHitClown(null);

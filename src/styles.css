@@ -262,8 +262,8 @@ a { color: inherit; }
   z-index: 20;
   top: 46%;
   left: 50%;
-  width: min(33vw, 420px);
-  max-width: 33vw;
+  width: max-content; /* box hugs the message */
+  max-width: min(33vw, 420px);
   padding: .55rem 1rem .65rem;
   border-block: 3px solid var(--carnival-cream);
   background: var(--carnival-red);
@@ -275,7 +275,7 @@ a { color: inherit; }
   text-align: center;
   text-transform: uppercase;
   transform: translate(-50%, -50%) rotate(-2deg);
-  animation: bonus-pop 3s ease both;
+  animation: bonus-pop 5s ease both;
   pointer-events: none;
 }
 .bonus-banner b { display: block; margin-top: .18rem; color: var(--carnival-gold); font-family: var(--font-sans); font-size: .68rem; letter-spacing: .12em; }
@@ -335,7 +335,7 @@ a { color: inherit; }
 }
 @keyframes bonus-pop {
   0% { opacity: 0; transform: translate(-50%, -50%) rotate(-2deg) scale(.7); }
-  10%, 86% { opacity: 1; transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
+  6%, 92% { opacity: 1; transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -56%) rotate(-2deg) scale(.96); }
 }
 @keyframes booking-chase { 0%, 55%, 100% { opacity: 1; } 20%, 40% { opacity: .22; } }
@@ -641,7 +641,7 @@ a { color: inherit; }
   .carousel-button { width: 36px; height: 36px; }
   .carousel-button-prev { left: .25rem; }
   .carousel-button-next { right: .25rem; }
-  .bonus-banner { width: 70vw; max-width: 70vw; }
+  .bonus-banner { max-width: 70vw; }
   .music-tour-grid { grid-template-columns: 1fr; }
   .music-tour-band .booking-banner { grid-column: auto; }
   .music-tour-band .tour-entry { padding-block: 1rem; }
