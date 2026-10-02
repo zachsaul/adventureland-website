@@ -34,7 +34,6 @@ export const Route = createFileRoute("/")({
         content: "Enter Adventureland. Listen on Spotify and Apple Music, and follow the band on Instagram.",
       },
       { property: "og:title", content: "Adventureland | Indie Rock Band" },
-      { property: "og:site_name", content: "Adventureland" },
       { name: "twitter:title", content: "Adventureland | Indie Rock Band" },
       {
         property: "og:description",
