@@ -141,7 +141,10 @@ function Adventureland() {
   const scrollPolaroids = (direction: number) => {
     const track = polaroidTrackRef.current;
     if (!track) return;
-    track.scrollBy({ left: direction * Math.min(track.clientWidth * 0.82, 360), behavior: "smooth" });
+    const card = track.querySelector<HTMLElement>(".polaroid-card");
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    const step = card ? card.offsetWidth + gap : track.clientWidth * 0.8;
+    track.scrollBy({ left: direction * step, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -363,9 +366,10 @@ function Adventureland() {
             <Instagram aria-hidden="true" /> Follow @ad.ventureland
           </a>
           <p className="instagram-note">Instagram feed coming soon. For now, enjoy these Polaroids.</p>
-          <div className="carousel-shell">
+        </div>
+        <div className="carousel-shell">
             <Button type="button" variant="ghost" className="carousel-button carousel-button-prev" onClick={() => scrollPolaroids(-1)} aria-label="Previous photos">
-              <ChevronLeft aria-hidden="true" />
+              <ChevronLeft aria-hidden="true" strokeWidth={1.25} />
             </Button>
             <div ref={polaroidTrackRef} className="polaroid-track" tabIndex={0} aria-label="Adventureland photo carousel">
               {polaroidPhotos.map((photo) => (
@@ -375,9 +379,8 @@ function Adventureland() {
               ))}
             </div>
             <Button type="button" variant="ghost" className="carousel-button carousel-button-next" onClick={() => scrollPolaroids(1)} aria-label="Next photos">
-              <ChevronRight aria-hidden="true" />
+              <ChevronRight aria-hidden="true" strokeWidth={1.25} />
             </Button>
-          </div>
         </div>
       </section>
 

@@ -540,17 +540,20 @@ a { color: inherit; }
   text-align: center;
 }
 
-.carousel-shell { position: relative; padding-inline: clamp(2.9rem, 7vw, 5.2rem); }
+/* Full-bleed carousel: spans the whole window, no visible scrollbar */
+.carousel-shell { position: relative; width: 100%; }
 .polaroid-track {
   display: flex;
   gap: clamp(1rem, 3vw, 2.2rem);
   overflow-x: auto;
-  padding: 1rem .5rem 1.5rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem) 1.5rem;
+  scroll-padding-inline: clamp(1rem, 3vw, 2rem);
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  scrollbar-color: var(--carnival-red-dark) transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.polaroid-track::-webkit-scrollbar { display: none; }
 .polaroid-card {
   flex: 0 0 clamp(205px, 27vw, 280px);
   scroll-snap-align: center;
@@ -567,23 +570,28 @@ a { color: inherit; }
   aspect-ratio: 1;
   object-fit: cover;
 }
+/* Big black arrow buttons that sit on top of the photos */
 .carousel-button {
   position: absolute;
   z-index: 4;
   top: 50%;
-  width: 40px;
-  height: 40px;
+  width: clamp(56px, 6vw, 80px);
+  height: clamp(56px, 6vw, 80px);
   padding: 0;
-  border: 2px solid var(--carnival-red-dark);
+  border: 0;
   border-radius: 50%;
-  background: var(--carnival-cream);
-  color: var(--carnival-red-dark);
+  background: var(--carnival-black);
+  color: var(--carnival-cream);
   transform: translateY(-50%);
+  transition: background .15s ease, transform .15s ease;
 }
-.carousel-button:hover { background: var(--carnival-gold); }
-.carousel-button svg { width: 1.35rem; height: 1.35rem; }
-.carousel-button-prev { left: .55rem; }
-.carousel-button-next { right: .55rem; }
+.carousel-button:hover,
+.carousel-button:focus-visible { background: var(--carnival-black); color: var(--carnival-gold); transform: translateY(-50%) scale(1.06); }
+.carousel-button svg { width: 55%; height: 55%; }
+.carousel-button-prev { left: clamp(1rem, 4vw, 3.5rem); }
+.carousel-button-next { right: clamp(1rem, 4vw, 3.5rem); }
+/* Touch screens swipe natively, so no arrows there */
+@media (hover: none) and (pointer: coarse) { .carousel-button { display: none; } }
 
 .music-tour-band {
   padding: clamp(5rem, 9vw, 7.5rem) clamp(.75rem, 3vw, 3rem) clamp(4rem, 8vw, 6.5rem);
@@ -636,11 +644,8 @@ a { color: inherit; }
   .clown-target::before { width: 165%; }
   .game-board { width: calc(100% - .7rem); padding-bottom: 4.5rem; }
   .polaroid-band { padding-block: 4.5rem 5.5rem; }
-  .carousel-shell { padding-inline: 2.5rem; }
   .polaroid-card { flex-basis: min(73vw, 260px); }
-  .carousel-button { width: 36px; height: 36px; }
-  .carousel-button-prev { left: .25rem; }
-  .carousel-button-next { right: .25rem; }
+  .carousel-button { display: none; }
   .bonus-banner { max-width: 70vw; }
   .music-tour-grid { grid-template-columns: 1fr; }
   .music-tour-band .booking-banner { grid-column: auto; }
