@@ -16,6 +16,9 @@ const DAN_IDS = new Set([1, 10]);
 const NATE_IDS = new Set([3, 6]);
 const TETRA_IDS = new Set([5, 8]);
 const SCOUT_IDS = new Set([11]);
+type QueuedMessage = { text: string; leavingIds?: number[] };
+// Each game notification is fully visible for 5 seconds, plus a short fade in and out.
+const MESSAGE_MS = 5500;
 
 // `position` picks which part of each photo shows inside the square Polaroid frame.
 const polaroidPhotos = [
@@ -126,7 +129,7 @@ function Adventureland() {
   const [gunAngle, setGunAngle] = useState(0);
   const [shotPending, setShotPending] = useState(false);
   const [score, setScore] = useState(0);
-  const [reactionMessage, setReactionMessage] = useState<string | null>(null);
+  const [reactionMessage, setReactionMessage] = useState<{ id: number; text: string } | null>(null);
   // Clowns who have "left" the lineup. Lives only in memory, so a refresh brings them back.
   const [goneIds, setGoneIds] = useState<Set<number>>(() => new Set());
   const goneIdsRef = useRef<Set<number>>(new Set());
@@ -136,6 +139,9 @@ function Adventureland() {
   const gunStationRef = useRef<HTMLDivElement>(null);
   const gunRef = useRef<HTMLButtonElement>(null);
   const bonusTimerRef = useRef<number | undefined>(undefined);
+  // Notifications wait their turn so each one gets its full time on screen.
+  const messageQueueRef = useRef<QueuedMessage[]>([]);
+  const messageIdRef = useRef(0);
   const shotTimerRef = useRef<number | undefined>(undefined);
   const resetTimerRef = useRef<number | undefined>(undefined);
   const hoveredTargetRef = useRef<number | null>(null);
@@ -206,6 +212,33 @@ function Adventureland() {
     if (geometry) setGunAngle(geometry.gunAngle);
   };
 
+  const showMessage = ({ text, leavingIds }: QueuedMessage) => {
+    messageIdRef.current += 1;
+    setReactionMessage({ id: messageIdRef.current, text });
+    // A clown who leaves (Scout) goes as her message appears, not before.
+    if (leavingIds?.length) {
+      leavingIds.forEach((id) => goneIdsRef.current.add(id));
+      setGoneIds(new Set(goneIdsRef.current));
+    }
+    bonusTimerRef.current = window.setTimeout(() => {
+      const next = messageQueueRef.current.shift();
+      if (next) showMessage(next);
+      else {
+        setReactionMessage(null);
+        bonusTimerRef.current = undefined;
+      }
+    }, MESSAGE_MS);
+  };
+
+  const queueMessage = (message: QueuedMessage) => {
+    if (bonusTimerRef.current === undefined) {
+      showMessage(message);
+      return;
+    }
+    const queue = messageQueueRef.current;
+    if (queue[queue.length - 1]?.text !== message.text) queue.push(message);
+  };
+
   const completeShot = (targetId: number, geometry: { gunAngle: number; streamStyle: CSSProperties }) => {
     setShotPending(false);
     setGunAngle(geometry.gunAngle);
@@ -219,7 +252,7 @@ function Adventureland() {
     setScore(nextScore);
 
     const counts = hitCountsRef.current;
-    // Reactions fire on every 3rd hit (3, 6, 9...). Dan and Scout leave the lineup after theirs.
+    // Reactions fire on every 3rd hit (3, 6, 9...). Scout leaves the lineup after hers.
     let milestoneMessage: string | null = null;
     let leavingIds: number[] = [];
     if (CAT_IDS.has(targetId)) {
@@ -227,10 +260,7 @@ function Adventureland() {
       if (counts.cats % 3 === 0) milestoneMessage = "You have something against cats?";
     } else if (DAN_IDS.has(targetId)) {
       counts.dan += 1;
-      if (counts.dan % 3 === 0) {
-        milestoneMessage = "Dan is getting pretty cold, he’s going inside to write songs...";
-        leavingIds = [...DAN_IDS];
-      }
+      if (counts.dan % 3 === 0) milestoneMessage = "Do you mind? I’m WALKIN’ HERE";
     } else if (NATE_IDS.has(targetId)) {
       counts.nate += 1;
       if (counts.nate % 3 === 0) milestoneMessage = "Do you mind? Nate’s trying to write a gold record...";
@@ -239,12 +269,11 @@ function Adventureland() {
       if (counts.tetra % 3 === 0) milestoneMessage = "This is starting to feel personal. Tetra is NOT happy with you.";
     } else if (SCOUT_IDS.has(targetId)) {
       counts.scout += 1;
-      if (counts.scout % 3 === 0) {
+      if (counts.scout === 3) { // she only leaves once
         milestoneMessage = "Your attempts to rattle Scout are of zero consequence to her, and she’s leaving to go raccoon hunting";
         leavingIds = [...SCOUT_IDS];
       }
     }
-    if (leavingIds.length) leavingIds.forEach((id) => goneIdsRef.current.add(id));
 
     // Lopez Titan waits for a shot without another reaction, so it never hides one.
     if (!milestoneMessage && !thousandPointMessageShownRef.current && nextScore >= 1000) {
@@ -254,17 +283,11 @@ function Adventureland() {
 
     const nextMessage = milestoneMessage ?? (isBonusShot ? "Bonus +100" : null);
     if (nextMessage) {
-      setReactionMessage(nextMessage);
-      if (bonusTimerRef.current !== undefined) window.clearTimeout(bonusTimerRef.current);
-      bonusTimerRef.current = window.setTimeout(() => {
-        setReactionMessage(null);
-        bonusTimerRef.current = undefined;
-      }, 5000);
+      queueMessage({ text: nextMessage, leavingIds: milestoneMessage ? leavingIds : undefined });
     }
     resetTimerRef.current = window.setTimeout(() => {
       setHitClown(null);
       setStreamStyle(null);
-      if (leavingIds.length) setGoneIds(new Set(goneIdsRef.current));
       const hoveredTargetId = hoveredTargetRef.current;
       const hoveredGeometry = hoveredTargetId === null ? null : getShotGeometry(hoveredTargetId);
       setGunAngle(hoveredGeometry?.gunAngle ?? 0);
@@ -380,7 +403,7 @@ function Adventureland() {
         </div>
       </section>
 
-      {reactionMessage ? <div className="bonus-banner reaction-banner" role="status">{reactionMessage}</div> : null}
+      {reactionMessage ? <div key={reactionMessage.id} className="bonus-banner reaction-banner" role="status">{reactionMessage.text}</div> : null}
 
       <section className="polaroid-band" aria-label="Adventureland photo carousel">
         <div className="section-edge section-edge-top" aria-hidden="true" />

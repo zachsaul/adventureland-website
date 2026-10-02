@@ -155,8 +155,9 @@ a { color: inherit; }
 .clown-target img { display: block; width: 100%; height: 100%; object-fit: contain; transition: transform .18s ease; }
 .clown-figure { position: relative; display: block; width: 100%; height: 100%; transform-origin: 50% 100%; transform-style: preserve-3d; }
 .clown-target-hit { filter: none; }
-/* A clown who has left the lineup fades away but keeps its spot so the others don't shift */
-.clown-target-gone { pointer-events: none; animation: clown-leave .7s ease forwards; }
+/* A clown who has left the lineup fades away but keeps its spot (and its dark spotlight) so nothing shifts */
+.clown-target-gone { pointer-events: none; }
+.clown-target-gone .clown-figure { animation: clown-leave .7s ease forwards; }
 @keyframes clown-leave { to { opacity: 0; transform: translateY(18px) scale(.85); visibility: hidden; } }
 .clown-target-hit .clown-figure { -webkit-animation: clown-knockdown 1.7s linear both; animation: clown-knockdown 1.7s linear both; will-change: transform; }
 .water-splash { position: absolute; z-index: 8; left: 50%; top: 42%; width: 150%; overflow: visible; pointer-events: none; transform: translate(-50%, -50%); filter: drop-shadow(0 0 6px var(--carnival-cream)); }
@@ -278,7 +279,7 @@ a { color: inherit; }
   text-align: center;
   text-transform: uppercase;
   transform: translate(-50%, -50%) rotate(-2deg);
-  animation: bonus-pop 5s ease both;
+  animation: bonus-pop 5.5s ease both; /* keep in sync with MESSAGE_MS */
   pointer-events: none;
 }
 .bonus-banner b { display: block; margin-top: .18rem; color: var(--carnival-gold); font-family: var(--font-sans); font-size: .68rem; letter-spacing: .12em; }
@@ -338,7 +339,7 @@ a { color: inherit; }
 }
 @keyframes bonus-pop {
   0% { opacity: 0; transform: translate(-50%, -50%) rotate(-2deg) scale(.7); }
-  6%, 92% { opacity: 1; transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
+  4%, 95% { opacity: 1; transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -56%) rotate(-2deg) scale(.96); }
 }
 @keyframes booking-chase { 0%, 55%, 100% { opacity: 1; } 20%, 40% { opacity: .22; } }
@@ -372,7 +373,7 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .water-gun, .water-gun span { transition: none; }
   .bonus-banner { animation: none; }
-  .clown-target-gone { animation: none; visibility: hidden; }
+  .clown-target-gone .clown-figure { animation: none; visibility: hidden; }
 }
 
 /* 2026 carnival-band composition */

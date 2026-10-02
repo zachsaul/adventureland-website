@@ -12,7 +12,7 @@ focused and explain them in plain language.
 - Before finishing a change, run `npm run build` and make sure it succeeds.
 - Game behavior to preserve: score and bonus shots reset on every page load and never persist;
   bonuses only happen on successful shots; cat, Dan, Nate, Tetra and Scout reactions fire on every
-  3rd hit of that group. After Dan's reaction both Dan clowns leave the lineup, and after Scout's
-  she leaves; they come back on refresh. Plus a one-time 1,000-point "Lopez Titan" reaction.
+  3rd hit of that group. After Scout's reaction she leaves the lineup (her dark spotlight stays);
+  she comes back on refresh. Notifications queue so each is fully visible for 5 seconds. Plus a one-time 1,000-point "Lopez Titan" reaction.
 - Layout: full-width carnival bands (navy game, cream Polaroids, textured red music/tour,
   black biography/TV) separated by matching zigzag edges.
