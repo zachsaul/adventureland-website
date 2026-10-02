@@ -17,6 +17,7 @@ const NATE_IDS = new Set([3, 6]);
 const TETRA_IDS = new Set([5, 8]);
 const SCOUT_IDS = new Set([11]);
 type QueuedMessage = { text: string; leavingIds?: number[] };
+const BONUS_SHOTS = new Set([5, 10]);
 // Each game notification is fully visible for 5 seconds, plus a short fade in and out.
 const MESSAGE_MS = 5500;
 
@@ -147,6 +148,7 @@ function Adventureland() {
   const hoveredTargetRef = useRef<number | null>(null);
   const polaroidTrackRef = useRef<HTMLDivElement>(null);
   const scoreRef = useRef(0);
+  const shotCountRef = useRef(0);
   const hitCountsRef = useRef({ cats: 0, dan: 0, nate: 0, tetra: 0, scout: 0 });
   const thousandPointMessageShownRef = useRef(false);
   const showIsCurrent = Date.now() < SHOW_ARCHIVE_AT;
@@ -245,8 +247,10 @@ function Adventureland() {
     setStreamStyle(geometry.streamStyle);
     setHitClown(targetId);
 
-    const isBonusShot = Math.random() < 0.2;
-    const points = isBonusShot ? 100 : 50;
+    // Every hit is 50 points; the 5th and 10th hits each add a 100-point bonus.
+    shotCountRef.current += 1;
+    const isBonusShot = BONUS_SHOTS.has(shotCountRef.current);
+    const points = 50 + (isBonusShot ? 100 : 0);
     const nextScore = scoreRef.current + points;
     scoreRef.current = nextScore;
     setScore(nextScore);
@@ -281,10 +285,8 @@ function Adventureland() {
       milestoneMessage = "Wow, you’re a regular Lopez Titan!";
     }
 
-    const nextMessage = milestoneMessage ?? (isBonusShot ? "Bonus +100" : null);
-    if (nextMessage) {
-      queueMessage({ text: nextMessage, leavingIds: milestoneMessage ? leavingIds : undefined });
-    }
+    if (isBonusShot) queueMessage({ text: "Bonus +100" });
+    if (milestoneMessage) queueMessage({ text: milestoneMessage, leavingIds });
     resetTimerRef.current = window.setTimeout(() => {
       setHitClown(null);
       setStreamStyle(null);

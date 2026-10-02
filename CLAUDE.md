@@ -10,8 +10,8 @@ focused and explain them in plain language.
 - Almost all content is in `src/routes/index.tsx`; styling is in `src/styles.css`.
 - Photos/video go in `public/media/` and are referenced through `src/lib/media.ts`.
 - Before finishing a change, run `npm run build` and make sure it succeeds.
-- Game behavior to preserve: score and bonus shots reset on every page load and never persist;
-  bonuses only happen on successful shots; cat, Dan, Nate, Tetra and Scout reactions fire on every
+- Game behavior to preserve: score resets on every page load and never persists; each hit is
+  50 points, and the 5th and 10th hits each add a 100-point bonus (no random bonuses); cat, Dan, Nate, Tetra and Scout reactions fire on every
   3rd hit of that group. After Scout's reaction she leaves the lineup (her dark spotlight stays);
   she comes back on refresh. Notifications queue so each is fully visible for 5 seconds. Plus a one-time 1,000-point "Lopez Titan" reaction.
 - Layout: full-width carnival bands (navy game, cream Polaroids, textured red music/tour,
