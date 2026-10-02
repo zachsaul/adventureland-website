@@ -268,7 +268,7 @@ a { color: inherit; }
   width: max-content; /* box hugs the message */
   max-width: min(33vw, 420px);
   padding: .55rem 1rem .65rem;
-  border-block: 3px solid var(--carnival-cream);
+  border: 3px solid var(--carnival-cream);
   background: var(--carnival-red);
   color: var(--carnival-cream);
   box-shadow: 0 6px 0 var(--carnival-red-dark), 0 12px 24px var(--wood-shadow);
